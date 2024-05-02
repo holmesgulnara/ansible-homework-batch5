@@ -1,0 +1,47 @@
+
+- hosts: all
+  tasks:
+    - name: Update apt apache
+      apt:
+        update_cache: yes
+      
+    - name: Install Apache, tree, git packages
+      apt:
+        name:
+          - apache2
+          - tree
+          - git
+        state: present
+
+    - name: Start Apache and enable on boot
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: Create groups kaizen, devops, qa
+      group:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - kaizen
+        - devops
+        - qa
+
+    - name: Create the user gulya and add to the kaizen and qa groups
+      user:
+        name: gulya
+        groups: qa,kaizen
+        append: yes
+    
+    - name: Create the user tester and add to the qa group
+      user:
+        name: tester
+        group: qa
+        state: present
+
+    - name: Copy files from Homework1 folder to remote ubuntu machine
+      copy:
+        src: "./"
+        dest: /root/
+     
