@@ -1,0 +1,80 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: Install required packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - httpd
+        - wget
+        - unzip
+        - epel-release
+        - mysql
+
+    # - name: Install Remi repository
+    #   yum:
+    #     name: https://rpms.remirepo.net/enterprise/remi-release-7.rpm
+    #     state: present
+
+    - name: Enable Remi PHP 7.4 repository
+      yum_repository:
+        name: remi-php74
+        description: Remi's PHP 7.4 RPM repository for Enterprise Linux 7
+        baseurl: https://rpms.remirepo.net/enterprise/7/php74/x86_64/
+        gpgcheck: yes
+        gpgkey: https://rpms.remirepo.net/RPM-GPG-KEY-remi
+        enabled: yes
+
+    - name: Install PHP and PHP MySQL module
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - php
+        - php-mysql
+
+    - name: Download WordPress
+      get_url:
+        url: https://wordpress.org/latest.tar.gz
+        dest: /tmp/latest.tar.gz
+
+    - name: Extract WordPress
+      unarchive:
+        src: /tmp/latest.tar.gz
+        dest: /var/www/html
+        remote_src: yes
+      notify: Restart Apache
+
+    - name: Set ownership of WordPress files
+      file:
+        path: /var/www/html
+        owner: apache
+        group: apache
+        recurse: yes
+
+    - name: Start Apache
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Install MariaDB and start the service
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - mariadb
+        - mariadb-server
+
+    - name: Start and enable MariaDB
+      service:
+        name: mariadb
+        state: started
+        enabled: yes
+
+  handlers:
+    - name: Restart Apache
+      service:
+        name: httpd
+        state: restarted
