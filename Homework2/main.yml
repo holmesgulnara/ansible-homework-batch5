@@ -11,11 +11,14 @@
         - unzip
         - epel-release
         - mysql
-
-    # - name: Install Remi repository
-    #   yum:
-    #     name: https://rpms.remirepo.net/enterprise/remi-release-7.rpm
-    #     state: present
+        - mariadb
+        - mariadb-server
+        
+    - name: Start Apache
+      service:
+        name: httpd
+        state: started
+        enabled: yes
 
     - name: Enable Remi PHP 7.4 repository
       yum_repository:
@@ -42,39 +45,25 @@
     - name: Extract WordPress
       unarchive:
         src: /tmp/latest.tar.gz
-        dest: /var/www/html
+        dest: /tmp
         remote_src: yes
-      notify: Restart Apache
 
-    - name: Set ownership of WordPress files
-      file:
-        path: /var/www/html
+    - name: Copy file with owner and permissions
+      copy:
+        src: /tmp/wordpress/.
+        dest: /var/www/html
         owner: apache
         group: apache
-        recurse: yes
+        mode: '0755'
+        remote_src: yes
 
-    - name: Start Apache
+    - name: Restart Apache
       service:
         name: httpd
-        state: started
-        enabled: yes
-
-    - name: Install MariaDB and start the service
-      yum:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - mariadb
-        - mariadb-server
+        state: restarted
 
     - name: Start and enable MariaDB
       service:
         name: mariadb
         state: started
         enabled: yes
-
-  handlers:
-    - name: Restart Apache
-      service:
-        name: httpd
-        state: restarted
