@@ -1,0 +1,10 @@
+- name: Install the latest version of Apache
+  ansible.builtin.yum:
+    name: "{{ package }}"
+    state: latest
+
+- name: Start service httpd, if not started
+  ansible.builtin.service:
+    name: "{{ package }}"
+    state: started
+    enabled: yes
