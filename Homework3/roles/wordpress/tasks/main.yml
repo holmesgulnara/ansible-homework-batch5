@@ -1,0 +1,29 @@
+- name: Download wordpress
+  get_url:
+    url: "{{ url }}"
+    dest: "{{ url_dest }}"                #we are downloading it and renaming it, so we can find the name
+
+- name: Extract wordpress
+  unarchive:
+    src: "{{ unzip_src }}"
+    dest: "{{ unzip_dest }}"
+    remote_src: yes
+
+- name: Copy file with owner and permissions
+  copy:
+    src: "{{ src }}"
+    dest: "{{ dest }}"
+    owner: "{{ owner_name }}"
+    group: "{{ group_name }}"
+    mode: '0755'
+    remote_src: yes
+
+- name: Template a file to html folder
+  ansible.builtin.template:
+    src: roles/wordpress/templates/wp-config-sample.php.j2
+    dest: /var/www/html/wp-config.php
+
+- name: Restart the service
+  service:
+    name: "{{ service_name }}"
+    state: "{{ service_state }}"

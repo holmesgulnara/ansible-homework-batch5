@@ -1,0 +1,5 @@
+db_name: kaizen
+db_user: kaizen
+db_password: kaizen123
+db_new_user: bob
+db_new_password: 12345

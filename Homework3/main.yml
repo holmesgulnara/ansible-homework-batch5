@@ -3,7 +3,6 @@
   tasks:
   roles:
     - apache
-    # - packages
-    # - php
-    # - wordpress
-    # - db
+    - packages
+    - wordpress
+    - db

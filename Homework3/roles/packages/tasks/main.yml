@@ -1,0 +1,8 @@
+- name: Install Packages required
+  ansible.builtin.yum:
+    name: "{{ packages }}"
+
+- name: Install bottle python package
+  ansible.builtin.pip:
+    name: "{{ pip_package }}"
+ 

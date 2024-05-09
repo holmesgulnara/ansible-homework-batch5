@@ -1,0 +1,10 @@
+url: https://wordpress.org/latest.tar.gz
+url_dest: /tmp/wordpress.tar.gz 
+unzip_src: /tmp/wordpress.tar.gz
+unzip_dest: /tmp
+src: /tmp/wordpress/.
+dest: /var/www/html
+owner_name: apache
+group_name: apache
+service_name: httpd
+service_state: restarted
